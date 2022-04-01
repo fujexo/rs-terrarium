@@ -3,35 +3,17 @@ mod sensor;
 mod settings;
 mod weather;
 
-use actor::Actor;
 use settings::Settings;
 
-use chrono::{DateTime, Utc};
-use chrono_tz::Tz;
-use log::debug;
+use chrono::Utc;
+use std::thread;
+use std::time;
+//use chrono_tz::Tz;
+use log::{debug, info};
 
-pub fn init_actors(actors: Vec<actor::ActorConfig>) -> Vec<actor::Actor> {
-    actors
-        .into_iter()
-        .map(|config| actor::Actor::new(config))
-        .collect()
-}
-
-pub fn check_relay_state(actor: &mut actor::Actor, sunrise: DateTime<Utc>, sunset: DateTime<Utc>) {
-    let now = Utc::now();
-
-    match actor.get_state() {
-        actor::State::Off => {
-            if now > sunrise && now < sunset {
-                actor.on();
-            }
-        }
-        actor::State::On => {
-            if now > sunset || now < sunrise {
-                actor.off();
-            }
-        }
-    }
+fn get_version() -> String {
+    let version = env!("CARGO_PKG_VERSION");
+    format!("{}", version)
 }
 
 pub fn run() -> () {
@@ -47,17 +29,14 @@ pub fn run() -> () {
     debug!("{:?}", settings.sensors);
     debug!("{:?}", settings.actors);
 
-    let usertimezone: Tz = match settings.general.timezone.parse() {
-        Ok(tz) => tz,
-        Err(e) => {
-            println!("{}", e);
-            return;
-        }
-    };
+    info!(
+        "Welcome to rs-terrarium {}. Loaded {} Sensors and {} Actors",
+        get_version(),
+        settings.sensors.len(),
+        settings.actors.len()
+    );
 
-    //let mut actors = terrarium::init_actors(settings.actors);
-    //let mut relay01 = actors.get(0).unwrap();
-    let mut relay01 = Actor::new(settings.actors[0].clone());
+    let mut actors = actor::init(settings.actors);
 
     // start our weather observatory via OWM
     let receiver = &openweathermap::init(
@@ -76,11 +55,17 @@ pub fn run() -> () {
         sunset: Utc::now() + chrono::Duration::hours(24),
         updated: false,
     };
-
-    //let testtime = Suntime {
+    //let mut suntime = weather::Suntime {
     //    sunrise: Utc::now() + chrono::Duration::minutes(1),
     //    sunset: Utc::now() + chrono::Duration::minutes(2),
     //    updated: true,
+    //};
+    //let usertimezone: Tz = match settings.general.timezone.parse() {
+    //    Ok(tz) => tz,
+    //    Err(e) => {
+    //        println!("{}", e);
+    //        return;
+    //    }
     //};
     //info!("Sunrise: {}", sunrise.with_timezone(&usertimezone));
     //info!("Sunset: {}", sunset.with_timezone(&usertimezone));
@@ -92,6 +77,10 @@ pub fn run() -> () {
     loop {
         weather::update_suntime(receiver, &mut suntime);
 
-        check_relay_state(&mut relay01, suntime.sunrise, suntime.sunset);
+        actors.iter_mut().for_each(|actor| {
+            actor.toggle_timebased(suntime.sunrise, suntime.sunset);
+        });
+
+        thread::sleep(time::Duration::from_millis(100));
     }
 }

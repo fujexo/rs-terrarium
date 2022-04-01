@@ -29,7 +29,11 @@ pub fn update_suntime(receiver: &openweathermap::Receiver, suntime: &mut Suntime
                 }
             }
             Err(e) => {
-                error!("Failed to get suntime: {}", e);
+                if e == "loading..." {
+                    // Loading should happen only at the first call and is ignored
+                } else {
+                    error!("Failed to get suntime: {}", e);
+                }
             }
         },
         None => (),

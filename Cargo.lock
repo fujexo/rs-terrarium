@@ -922,6 +922,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "rppal"
+version = "0.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c88c9c6248de4d337747b619d8f671055ef48a87dc21b97998833f189a0bbd4f"
+dependencies = [
+ "lazy_static",
+ "libc",
+]
+
+[[package]]
 name = "rust-ini"
 version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1051,6 +1061,7 @@ dependencies = [
  "iso8601-duration",
  "log",
  "openweathermap",
+ "rppal",
  "serde",
  "serde_derive",
  "serde_json",
