@@ -28,7 +28,7 @@ pub struct Settings {
 impl Settings {
     pub fn new() -> Result<Self, ConfigError> {
         let config = Config::builder()
-            .add_source(File::with_name("config.toml"))
+            .add_source(File::with_name("/etc/terrarium/config.toml"))
             .build()?;
 
         config.try_deserialize()
