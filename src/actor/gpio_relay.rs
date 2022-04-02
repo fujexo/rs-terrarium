@@ -67,8 +67,11 @@ impl Actor for GpioRelay {
     fn toggle_timebased(&mut self, start: DateTime<Utc>, end: DateTime<Utc>) {
         let now = Utc::now();
 
-        let on_delay = super::parse_delay(&self.config, "on_delay");
-        let off_delay = super::parse_delay(&self.config, "off_delay");
+        let on_delay =
+            // TODO: This is ugly as fuck
+            super::parse_delay(&self.config.on_delay.as_ref().unwrap_or(&"0".to_string()));
+        let off_delay =
+            super::parse_delay(&self.config.off_delay.as_ref().unwrap_or(&"0".to_string()));
 
         let start = match on_delay {
             Ok(delay) => start + delay,
