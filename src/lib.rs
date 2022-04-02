@@ -37,6 +37,9 @@ pub fn run() -> () {
     );
 
     let mut actors = actor::init(settings.actors);
+    //for actor in &actors {
+    //    actor.print_actor_config();
+    //}
 
     // start our weather observatory via OWM
     let receiver = &openweathermap::init(
@@ -78,6 +81,8 @@ pub fn run() -> () {
         weather::update_suntime(receiver, &mut suntime);
 
         actors.iter_mut().for_each(|actor| {
+            //let on_delay = iso8601_duration::Duration::parse(actor.config.on_delay);
+
             actor.toggle_timebased(suntime.sunrise, suntime.sunset);
         });
 

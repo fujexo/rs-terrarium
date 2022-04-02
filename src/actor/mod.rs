@@ -63,6 +63,8 @@ pub trait Actor {
             }
         }
     }
+
+    fn print_actor_config(&self) {}
 }
 
 pub fn init(actor_configs: Vec<ActorConfig>) -> Vec<Box<dyn Actor>> {
@@ -84,4 +86,64 @@ pub fn init(actor_configs: Vec<ActorConfig>) -> Vec<Box<dyn Actor>> {
     }
 
     actors
+}
+
+fn parse_delay(actor_config: &ActorConfig, delay_type: &str) -> Result<chrono::Duration, String> {
+    let delay = match delay_type {
+        on_delay => std::time::Duration::from_secs(
+            actor_config
+                .on_delay
+                .as_ref()
+                .unwrap_or(&"0".to_string())
+                .parse::<u64>()
+                .unwrap(),
+        ),
+        off_delay => std::time::Duration::from_secs(
+            actor_config
+                .off_delay
+                .as_ref()
+                .unwrap_or(&"0".to_string())
+                .parse::<u64>()
+                .unwrap(),
+        ),
+    };
+
+    let chrono_duration = chrono::Duration::from_std(delay).unwrap();
+
+    Ok(chrono_duration)
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    fn test_actor_init() {
+        let actor_configs = vec![
+            ActorConfig {
+                name: "test_actor".to_string(),
+                address: "test_actor".to_string(),
+                kind: "dummy".to_string(),
+                max_ontime: Some("10:00".to_string()),
+                min_ontime: Some("08:00".to_string()),
+                on_delay: Some("10".to_string()),
+                off_delay: Some("10".to_string()),
+            },
+            ActorConfig {
+                name: "test_actor2".to_string(),
+                address: "test_actor2".to_string(),
+                kind: "dummy".to_string(),
+                max_ontime: None,
+                min_ontime: None,
+                on_delay: None,
+                off_delay: None,
+            },
+        ];
+
+        let actors = init(actor_configs);
+
+        assert_eq!(actors.len(), 2);
+        assert_eq!(actors[0].get_state(), State::Off);
+    }
 }
