@@ -88,27 +88,8 @@ pub fn init(actor_configs: Vec<ActorConfig>) -> Vec<Box<dyn Actor>> {
     actors
 }
 
-fn parse_delay(actor_config: &ActorConfig, delay_type: &str) -> Result<chrono::Duration, String> {
-    let delay = match delay_type {
-        on_delay => std::time::Duration::from_secs(
-            actor_config
-                .on_delay
-                .as_ref()
-                .unwrap_or(&"0".to_string())
-                .parse::<u64>()
-                .unwrap(),
-        ),
-        off_delay => std::time::Duration::from_secs(
-            actor_config
-                .off_delay
-                .as_ref()
-                .unwrap_or(&"0".to_string())
-                .parse::<u64>()
-                .unwrap(),
-        ),
-    };
-
-    let chrono_duration = chrono::Duration::from_std(delay).unwrap();
+fn parse_delay(seconds: &String) -> Result<chrono::Duration, String> {
+    let chrono_duration = chrono::Duration::seconds(seconds.parse::<i64>().unwrap());
 
     Ok(chrono_duration)
 }
