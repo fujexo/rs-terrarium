@@ -11,10 +11,10 @@ pub struct ActorConfig {
     name: String,
     address: String,
     kind: String,
-    max_ontime: Option<String>,
-    min_ontime: Option<String>,
-    on_delay: Option<String>,
-    off_delay: Option<String>,
+    max_ontime: Option<i64>,
+    min_ontime: Option<i64>,
+    on_delay: Option<i64>,
+    off_delay: Option<i64>,
 }
 
 #[derive(Debug)]
@@ -88,10 +88,11 @@ pub fn init(actor_configs: Vec<ActorConfig>) -> Vec<Box<dyn Actor>> {
     actors
 }
 
-fn parse_delay(seconds: &String) -> Result<chrono::Duration, String> {
-    let chrono_duration = chrono::Duration::seconds(seconds.parse::<i64>().unwrap());
-
-    Ok(chrono_duration)
+fn parse_duration_seconds(duration: Option<&i64>) -> Result<chrono::Duration, String> {
+    match duration {
+        Some(duration) => Ok(chrono::Duration::seconds(*duration)),
+        None => Err("No duration specified".to_string()),
+    }
 }
 
 #[cfg(test)]
@@ -99,32 +100,44 @@ mod tests {
 
     use super::*;
 
-    #[test]
-    fn test_actor_init() {
-        let actor_configs = vec![
+    fn test_init() -> Vec<ActorConfig> {
+        vec![
             ActorConfig {
                 name: "test_actor".to_string(),
                 address: "test_actor".to_string(),
                 kind: "dummy".to_string(),
-                max_ontime: Some("10:00".to_string()),
-                min_ontime: Some("08:00".to_string()),
-                on_delay: Some("10".to_string()),
-                off_delay: Some("10".to_string()),
+                max_ontime: Some(72000),
+                min_ontime: Some(3600),
+                on_delay: Some(600),
+                off_delay: Some(-600),
             },
             ActorConfig {
                 name: "test_actor2".to_string(),
                 address: "test_actor2".to_string(),
                 kind: "dummy".to_string(),
                 max_ontime: None,
-                min_ontime: None,
+                min_ontime: Some(3600),
                 on_delay: None,
                 off_delay: None,
             },
-        ];
+        ]
+    }
 
-        let actors = init(actor_configs);
+    #[test]
+    fn actor_init() {
+        let actors_config = test_init();
+        let actors = init(actors_config);
 
         assert_eq!(actors.len(), 2);
-        assert_eq!(actors[0].get_state(), State::Off);
+        matches!(actors[0].get_state(), State::Off);
+    }
+
+    #[test]
+    fn test_parse_duration_seconds() {
+        let duration = parse_duration_seconds(Some(&10));
+        assert_eq!(duration.unwrap().num_seconds(), 10);
+
+        let duration = parse_duration_seconds(None);
+        matches!(duration, Err(_));
     }
 }
