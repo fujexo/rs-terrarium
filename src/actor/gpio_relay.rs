@@ -40,7 +40,9 @@ impl Actor for GpioRelay {
         }
     }
     fn get_state(&self) -> State {
-        if self.pin.is_set_high() {
+        // TODO: implement inverse logic for different relays
+        //if self.pin.is_set_high() {
+        if self.pin.is_set_low() {
             State::On
         } else {
             State::Off
@@ -48,13 +50,17 @@ impl Actor for GpioRelay {
     }
 
     fn on(&mut self) {
-        self.pin.set_high();
+        // TODO: implement inverse logic for different relays
+        //self.pin.set_high();
+        self.pin.set_low();
         thread::sleep(Duration::from_millis(500));
         info!("Actor '{}' is now on", self.config.name);
     }
 
     fn off(&mut self) {
-        self.pin.set_low();
+        // TODO: implement inverse logic for different relays
+        //self.pin.set_low();
+        self.pin.set_high();
         thread::sleep(Duration::from_millis(500));
         info!("Actor '{}' is now off", self.config.name);
     }
@@ -67,11 +73,8 @@ impl Actor for GpioRelay {
     fn toggle_timebased(&mut self, start: DateTime<Utc>, end: DateTime<Utc>) {
         let now = Utc::now();
 
-        let on_delay =
-            // TODO: This is ugly as fuck
-            super::parse_delay(&self.config.on_delay.as_ref().unwrap_or(&"0".to_string()));
-        let off_delay =
-            super::parse_delay(&self.config.off_delay.as_ref().unwrap_or(&"0".to_string()));
+        let on_delay = super::parse_duration_seconds(self.config.on_delay.as_ref());
+        let off_delay = super::parse_duration_seconds(self.config.off_delay.as_ref());
 
         let start = match on_delay {
             Ok(delay) => start + delay,
