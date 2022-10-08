@@ -36,7 +36,7 @@ impl Actor for GpioRelay {
         //    .into_output();
         GpioRelay {
             config: actor_config,
-            pin: pin,
+            pin,
         }
     }
     fn get_state(&self) -> State {

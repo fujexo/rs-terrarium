@@ -8,8 +8,8 @@ pub struct Suntime {
 }
 
 pub fn update_suntime(receiver: &openweathermap::Receiver, suntime: &mut Suntime) {
-    match openweathermap::update(receiver) {
-        Some(response) => match response {
+    if let Some(response) = openweathermap::update(receiver) {
+        match response {
             Ok(data) => {
                 let sunrise = Utc.timestamp(data.sys.sunrise, 0);
                 let sunset = Utc.timestamp(data.sys.sunset, 0);
@@ -35,7 +35,6 @@ pub fn update_suntime(receiver: &openweathermap::Receiver, suntime: &mut Suntime
                     error!("Failed to get suntime: {}", e);
                 }
             }
-        },
-        None => (),
+        }
     }
 }

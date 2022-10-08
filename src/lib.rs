@@ -13,10 +13,10 @@ use log::{debug, info};
 
 fn get_version() -> String {
     let version = env!("CARGO_PKG_VERSION");
-    format!("{}", version)
+    version.to_string()
 }
 
-pub fn run() -> () {
+pub fn run() {
     // setup settings config
     let settings = match Settings::new() {
         Ok(settings) => settings,
@@ -73,7 +73,7 @@ pub fn run() -> () {
     //info!("Sunrise: {}", sunrise.with_timezone(&usertimezone));
     //info!("Sunset: {}", sunset.with_timezone(&usertimezone));
 
-    while suntime.updated == false {
+    while !suntime.updated {
         weather::update_suntime(receiver, &mut suntime);
     }
 
