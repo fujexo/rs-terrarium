@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 openweathermap = "0.2.4"
 chrono = "0.4.22"
-chrono-tz = "0.6.1"
+chrono-tz = "0.6.3"
 iso8601-duration = "0.1.0"
 config = "0.13.2"
 serde = "1.0.145"
