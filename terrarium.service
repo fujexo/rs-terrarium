@@ -1,0 +1,13 @@
+[Unit]
+Description=SystemD Service for RS-Terrarium
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+Environment=RUST_LOG_STYLE=SYSTEMD
+#Environment=RUST_LOG=debug
+ExecStart=/usr/local/bin/terrarium
+
+[Install]
+WantedBy=multi-user.target
