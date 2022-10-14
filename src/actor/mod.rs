@@ -1,6 +1,9 @@
 pub mod dummy;
 pub mod gpio_relay;
 
+#[cfg(test)]
+use mockall::{automock, mock, predicate::*};
+
 use chrono::{DateTime, Utc};
 use log::debug;
 use serde_derive::{Deserialize, Serialize};
@@ -23,6 +26,7 @@ pub enum State {
     Off,
 }
 
+#[cfg_attr(test, automock)]
 pub trait Actor {
     // Create a new actor based on the type
     fn new(actor_config: ActorConfig) -> Self
@@ -99,6 +103,7 @@ fn parse_duration_seconds(duration: Option<&i64>) -> Result<chrono::Duration, St
 mod tests {
 
     use super::*;
+    use chrono::Duration;
 
     fn test_init() -> Vec<ActorConfig> {
         vec![
@@ -130,6 +135,7 @@ mod tests {
 
         assert_eq!(actors.len(), 2);
         matches!(actors[0].get_state(), State::Off);
+        matches!(actors[1].get_state(), State::Off);
     }
 
     #[test]
@@ -140,4 +146,98 @@ mod tests {
         let duration = parse_duration_seconds(None);
         matches!(duration, Err(_));
     }
+
+    #[test]
+    fn test_actor_on_off() {
+        let actors_config = test_init();
+        let mut actors = init(actors_config);
+
+        matches!(actors[0].get_state(), State::Off);
+        actors[0].on();
+        matches!(actors[0].get_state(), State::On);
+        actors[0].off();
+        matches!(actors[0].get_state(), State::Off);
+    }
+
+    #[test]
+    fn test_actor_toggle() {
+        let actors_config = test_init();
+        let mut actors = init(actors_config);
+
+        matches!(actors[0].get_state(), State::Off);
+        actors[0].toggle();
+        matches!(actors[0].get_state(), State::On);
+        actors[0].toggle();
+        matches!(actors[0].get_state(), State::Off);
+    }
+
+    #[test]
+    fn test_actor_toggle_timebased() {
+        struct Test {
+            actor_config: ActorConfig,
+            state: State,
+        }
+
+        impl Actor for Test {
+            fn new(actor_config: ActorConfig) -> Self {
+                Test {
+                    state: State::Off,
+                    actor_config,
+                }
+            }
+            fn on(&mut self) {
+                self.state = State::On;
+            }
+            fn off(&mut self) {
+                self.state = State::Off;
+            }
+            fn get_state(self: &Test) -> State {
+                match self.state {
+                    State::On => State::On,
+                    State::Off => State::Off,
+                }
+            }
+        }
+
+        let mut test_actor = Test::new(ActorConfig {
+            name: "Test Actor Name".to_string(),
+            address: "Test address".to_string(),
+            kind: "Test Actor kind".to_string(),
+            on_delay: None,
+            off_delay: None,
+            max_ontime: None,
+            min_ontime: None,
+        });
+
+        let now = Utc::now();
+
+        test_actor.toggle_timebased(now - Duration::hours(1), now + Duration::hours(1));
+        matches!(test_actor.get_state(), State::On);
+
+        test_actor.toggle_timebased(now + Duration::hours(1), now + Duration::hours(2));
+        matches!(test_actor.get_state(), State::Off);
+
+        test_actor.toggle_timebased(now - Duration::hours(2), now - Duration::hours(1));
+        matches!(test_actor.get_state(), State::Off);
+    }
+
+    /*Not sure how to test this with mockall... TODO revisit in the future*/
+    //#[test]
+    //fn test_on_off() {
+    //    let mut mock = MockActor::new(ActorConfig {
+    //        name: "Test Actor Name".to_string(),
+    //        address: "Test address".to_string(),
+    //        kind: "Test Actor kind".to_string(),
+    //        on_delay: None,
+    //        off_delay: None,
+    //        max_ontime: None,
+    //        min_ontime: None,
+    //    });
+
+    //    mock.expect_on().times(1).return_const(());
+    //    mock.expect_off().times(1).return_const(());
+
+    //    assert_eq!((), mock.on());
+    //    assert_eq!((), mock.off());
+    //}
 }
