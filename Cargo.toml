@@ -3,7 +3,13 @@ name = "terrarium"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = ["Philipp Marmet  <fujexo@c0d3.ch>"]
+description = "Binary package for controlling various components of a *arium"
+readme = "README.md"
+repository = "https://github.com/fujexo/rs-terrarium"
+license-file = "LICENSE.txt"
+keywords = [""]
+categories = [""]
 
 [dependencies]
 openweathermap = "0.2.4"
