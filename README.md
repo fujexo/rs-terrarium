@@ -13,6 +13,19 @@ It is written in rust, because why not and I really like playing around with it.
 
 To create a new build, make sure to have [cross](https://github.com/cross-rs/cross) installed. Then build it:
 
+```shell
+cross build --release
+```
+
+### DEB-Package
+
+With [cargo-deb](https://github.com/kornelski/cargo-deb), we can create a debian package for simpler installation.
+This requires to have [arm-none-eabi-binutils](https://archlinux.org/packages/community/x86_64/arm-none-eabi-binutils/) to be installed.
+
+```shell
+cargo deb --no-build --target armv7-unknown-linux-gnueabihf
+```
+
 ### Coverage report
 
 To run a coverage report, install `cargo install grcov` and `rustup component add llvm-tools-preview`.

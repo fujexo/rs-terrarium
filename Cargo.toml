@@ -26,3 +26,17 @@ rppal = "0.13.1"
 
 [dev-dependencies]
 mockall = "0.11.3"
+cargo-deb = "1.41.3"
+
+[package.metadata.cross.build]
+rustflags=["-Cinstrument-coverage", "-L /usr/arm-linux-gnueabihf/lib/", "-L /usr/lib/arm-linux-gnueabihf/"]
+default-target = "armv7-unknown-linux-gnueabihf"
+pre-build = ["dpkg --add-architecture armhf", "apt-get update && apt-get install --assume-yes libdbus-1-dev libdbus-1-dev:armhf pkg-config"]
+
+[package.metadata.cross.build.env]
+passthrough = [
+  "RUSTFLAGS",
+]
+
+[package.metadata.deb]
+depends = ["dbus"]
