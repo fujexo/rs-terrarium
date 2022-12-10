@@ -1,0 +1,6 @@
+rustflags=["-Cinstrument-coverage"]
+
+[target.armv7-unknown-linux-gnueabihf]
+objcopy = { path ="arm-none-eabi-objcopy" }
+strip = { path ="arm-none-eabi-strip" }
+rustflags = ["-L", "/usr/arm-linux-gnueabihf/lib", "-L", "/usr/lib/arm-linux-gnueabihf/" ]
