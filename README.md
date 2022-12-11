@@ -7,6 +7,23 @@ It is written in rust, because why not and I really like playing around with it.
 
 ## Installation
 
+```
+wget -q -O /usr/share/keyrings/grafana.key https://apt.grafana.com/gpg.key
+echo "deb [signed-by=/usr/share/keyrings/grafana.key] https://apt.grafana.com stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+
+wget -q https://repos.influxdata.com/influxdb.key
+echo '23a1c8836f0afc5ed24e0486339d7cc8f6790b83886c4c96995b88a061c5bb5d influxdb.key' | sha256sum -c && cat influxdb.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/influxdb.gpg > /dev/null
+echo 'deb [signed-by=/etc/apt/trusted.gpg.d/influxdb.gpg] https://repos.influxdata.com/debian stable main' | sudo tee /etc/apt/sources.list.d/influxdata.list
+
+curl https://github.com/fujexo/rs-terrarium/packages/terrarium.deb
+dpkg -i terrarium.deb
+apt-get install -f
+
+systemctl enable --now influxdb.service
+systemctl enable --now grafana-server.service
+systemctl enable --now terrarium.service
+```
+
 ## Configuration
 
 ## Development
