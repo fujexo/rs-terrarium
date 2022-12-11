@@ -1,0 +1,76 @@
+name: Lint and Test
+
+on:
+  push:
+    paths:
+      - ".github/workflows/build.yml"
+      - "src/**"
+      - "Cargo.*"
+  pull_request:
+    paths:
+      - ".github/workflows/build.yml"
+      - "src/**"
+      - "Cargo.*"
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - armv7-unknown-linux-gnueabihf
+
+    name: Build and Test ${{ matrix.target }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Ubuntu dependencies
+        run: sudo apt update && sudo apt install -y --no-install-recommends libdbus-1-dev pkg-config
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: default
+          toolchain: stable
+          override: true
+          components: clippy, rustfmt
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Show environment
+        run: |
+          rustc -vV
+          cargo -vV
+
+      - name: Install cargo dependencies
+        run: cargo install cross cargo-deb
+
+      - name: Build ${{ matrix.target }}
+        run: cross build --release --verbose --target ${{ matrix.target }}
+
+      - name: Test ${{ matrix.target }}
+        run: cross test --release --verbose --target ${{ matrix.target }}
+
+      - name: Clippy ${{ matrix.target }}
+        run: cross clippy --release --verbose --target ${{ matrix.target }}
+
+      - name: check formatting
+        if: ${{ matrix.target == 'armv7-unknown-linux-gnueabihf' }}
+        run: cargo fmt --all -- --check
+
+      - name: Build debian package
+        run: cargo deb --no-build --no-strip --target ${{ matrix.target }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: terrarium-${{ matrix.target }}
+          path: |
+            target/${{ matrix.target }}/release/terrarium
+            target/${{ matrix.target }}/debian/terrarium*.deb
