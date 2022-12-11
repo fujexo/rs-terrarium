@@ -1,6 +1,15 @@
 use log::LevelFilter;
 use std::io::Write;
 
+use clap::Parser;
+
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    #[arg(short, long, default_value = "/etc/terrarium/config.toml")]
+    config: String,
+}
+
 fn main() {
     match std::env::var("RUST_LOG_STYLE") {
         Ok(s) if s == "SYSTEMD" => env_logger::builder()
@@ -28,5 +37,7 @@ fn main() {
             .init(),
     };
 
-    terrarium::run();
+    let args = Args::parse();
+
+    terrarium::run(args.config);
 }
