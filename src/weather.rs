@@ -11,8 +11,8 @@ pub fn update_suntime(receiver: &openweathermap::Receiver, suntime: &mut Suntime
     if let Some(response) = openweathermap::update(receiver) {
         match response {
             Ok(data) => {
-                let sunrise = Utc.timestamp(data.sys.sunrise, 0);
-                let sunset = Utc.timestamp(data.sys.sunset, 0);
+                let sunrise = Utc.timestamp_opt(data.sys.sunrise, 0).unwrap();
+                let sunset = Utc.timestamp_opt(data.sys.sunset, 0).unwrap();
 
                 if suntime.sunrise != sunrise || suntime.sunset != sunset {
                     let ontime = sunset.signed_duration_since(sunrise);
