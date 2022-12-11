@@ -37,7 +37,7 @@ pub fn run(config_file: String) {
         settings.actors.len()
     );
 
-    thread::spawn(move || ingics::run());
+    thread::spawn(ingics::run);
 
     let mut actors = actor::init(settings.actors);
     //for actor in &actors {
