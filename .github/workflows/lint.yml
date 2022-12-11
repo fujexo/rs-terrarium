@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update && sudo apt install -y libdbus-1-dev pkg-config
-          cargo install binstall
+          cargo install cargo-binstall
           cargo binstall cross
 
       - name: Build
