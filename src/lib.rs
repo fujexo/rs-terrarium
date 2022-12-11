@@ -1,4 +1,5 @@
 mod actor;
+mod ingics;
 mod sensor;
 mod settings;
 mod weather;
@@ -36,6 +37,8 @@ pub fn run() {
         settings.actors.len()
     );
 
+    thread::spawn(move || ingics::run());
+
     let mut actors = actor::init(settings.actors);
     //for actor in &actors {
     //    actor.print_actor_config();
@@ -58,20 +61,6 @@ pub fn run() {
         sunset: Utc::now() + chrono::Duration::hours(24),
         updated: false,
     };
-    //let mut suntime = weather::Suntime {
-    //    sunrise: Utc::now() + chrono::Duration::minutes(1),
-    //    sunset: Utc::now() + chrono::Duration::minutes(2),
-    //    updated: true,
-    //};
-    //let usertimezone: Tz = match settings.general.timezone.parse() {
-    //    Ok(tz) => tz,
-    //    Err(e) => {
-    //        println!("{}", e);
-    //        return;
-    //    }
-    //};
-    //info!("Sunrise: {}", sunrise.with_timezone(&usertimezone));
-    //info!("Sunset: {}", sunset.with_timezone(&usertimezone));
 
     while !suntime.updated {
         weather::update_suntime(receiver, &mut suntime);

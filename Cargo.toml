@@ -23,13 +23,17 @@ serde_json = "1.0.89"
 log = "0.4.17"
 env_logger = "0.10.0"
 rppal = "0.14.1"
+ingics = { version = "0.1.1", features=["influxdb"] }
+futures = "0.3"
+bluer = { version = "0.15.0", features = ["full"] }
+tokio = { version = "1", features = ["full"] }
+influxdb = "0.5.2"
 
 [dev-dependencies]
 mockall = "0.11.3"
 cargo-deb = "1.41.3"
 
 [package.metadata.cross.build]
-rustflags=["-Cinstrument-coverage", "-L /usr/arm-linux-gnueabihf/lib/", "-L /usr/lib/arm-linux-gnueabihf/"]
 default-target = "armv7-unknown-linux-gnueabihf"
 pre-build = ["dpkg --add-architecture armhf", "apt-get update && apt-get install --assume-yes libdbus-1-dev libdbus-1-dev:armhf pkg-config"]
 
@@ -39,4 +43,11 @@ passthrough = [
 ]
 
 [package.metadata.deb]
-depends = ["dbus"]
+depends = "dbus, influxdb, grafana"
+assets  = [
+  ["target/release/terrarium", "/usr/bin/terrarium", "775"],
+  ["assets/terrarium.service", "/lib/systemd/system/terrarium.service", "755"],
+  ["assets/grafana/influxdb.yaml", "/etc/grafana/provision/datasources/influxdb.yaml", "755"],
+  ["assets/grafana/terrarium.yaml", "/etc/grafana/provision/dashboards/terrarium.yaml", "755"],
+  ["assets/grafana/terrarium.json", "/etc/grafana/dashboards/terrarium.json", "755"],
+]

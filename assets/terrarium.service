@@ -7,7 +7,7 @@ User=pi
 Group=pi
 Environment=RUST_LOG_STYLE=SYSTEMD
 #Environment=RUST_LOG=debug
-ExecStart=/usr/local/bin/terrarium
+ExecStart=/usr/bin/terrarium
 
 [Install]
 WantedBy=multi-user.target
