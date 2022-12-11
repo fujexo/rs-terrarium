@@ -28,11 +28,11 @@ jobs:
           profile: default
           toolchain: stable
           override: true
-          components: binstall
 
       - name: Install dependencies
         run: |
           sudo apt update && sudo apt install -y libdbus-1-dev pkg-config
+          cargo install binstall
           cargo binstall cross
 
       - name: Build
