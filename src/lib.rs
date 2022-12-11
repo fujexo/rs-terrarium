@@ -17,9 +17,9 @@ fn get_version() -> String {
     version.to_string()
 }
 
-pub fn run() {
+pub fn run(config_file: String) {
     // setup settings config
-    let settings = match Settings::new() {
+    let settings = match Settings::new(config_file) {
         Ok(settings) => settings,
         Err(e) => {
             println!("{}", e);
