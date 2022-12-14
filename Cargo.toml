@@ -25,7 +25,7 @@ env_logger = "0.10.0"
 rppal = "0.14.1"
 ingics = { version = "0.1.1", features=["influxdb"] }
 futures = "0.3"
-bluer = { version = "0.15.0", features = ["full"] }
+bluer = { version = "0.15.4", features = ["full"] }
 tokio = { version = "1", features = ["full"] }
 influxdb = "0.5.2"
 clap = { version = "4.0.29", features = ["derive"] }
