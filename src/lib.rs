@@ -10,7 +10,7 @@ use chrono::Utc;
 use std::thread;
 use std::time;
 //use chrono_tz::Tz;
-use log::{debug, info};
+use log::{debug, error, info};
 
 fn get_version() -> String {
     let version = env!("CARGO_PKG_VERSION");
@@ -22,7 +22,7 @@ pub fn run(config_file: String) {
     let settings = match Settings::new(config_file) {
         Ok(settings) => settings,
         Err(e) => {
-            println!("{}", e);
+            error!("{}", e);
             return;
         }
     };
