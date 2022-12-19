@@ -61,8 +61,6 @@ pub fn run(config_file: String) {
         updated: false,
     };
 
-    sensor::influxdb::run(&settings.influxdb);
-
     while !suntime.updated {
         weather::update_suntime(receiver, &mut suntime);
     }
