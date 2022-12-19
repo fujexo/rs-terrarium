@@ -23,6 +23,7 @@ async fn query_device(
                 Some(payload) => match ingics::parse_data(payload) {
                     None => error!("Failed to parse payload"),
                     Some(i) => {
+                        //println!("{:?}", i);
                         let write_result = influxclient.query(i.into_query("sensor")).await;
                         if write_result.is_err() {
                             error!("Failed to write result to InfluxDB");
@@ -36,6 +37,7 @@ async fn query_device(
                 Some(payload) => match ingics::parse_data(payload) {
                     None => error!("Failed to parse payload"),
                     Some(i) => {
+                        //println!("{:?}", i);
                         let write_result = influxclient.query(i.into_query("sensor")).await;
                         if write_result.is_err() {
                             error!("Failed to write result to InfluxDB");
@@ -82,19 +84,21 @@ pub async fn run() -> bluer::Result<()> {
                     let res = query_device(&adapter, addr, &influxclient).await;
 
                     if let Err(err) = res {
-                        error!("Error: {}", &err);
+                        println!("    Error: {}", &err);
                     }
 
                     let device = adapter.device(addr)?;
                     let change_events = device.events().await?.map(move |evt| (addr, evt));
                     all_change_events.push(change_events);
                 }
+
+                println!();
             }
             Some((addr, DeviceEvent::PropertyChanged(_property))) = all_change_events.next() => {
                 let res = query_device(&adapter, addr, &influxclient).await;
 
                 if let Err(err) = res {
-                    error!("Error: {}", &err);
+                    println!("    Error: {}", &err);
                 }
             }
 
