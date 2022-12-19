@@ -1,5 +1,4 @@
 mod actor;
-mod ingics;
 mod sensor;
 mod settings;
 mod weather;
@@ -37,7 +36,7 @@ pub fn run(config_file: String) {
         settings.actors.len()
     );
 
-    thread::spawn(ingics::run);
+    thread::spawn(sensor::ingics::run);
 
     let mut actors = actor::init(settings.actors);
     //for actor in &actors {
@@ -61,6 +60,8 @@ pub fn run(config_file: String) {
         sunset: Utc::now() + chrono::Duration::hours(24),
         updated: false,
     };
+
+    sensor::influxdb::run(&settings.influxdb);
 
     while !suntime.updated {
         weather::update_suntime(receiver, &mut suntime);

@@ -1,4 +1,5 @@
 //pub mod bme280;
+pub mod ingics;
 
 use serde_derive::Deserialize;
 
