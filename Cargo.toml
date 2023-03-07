@@ -24,7 +24,7 @@ ingics = { version = "0.1.1", features=["influxdb"] }
 futures = { default-features = false, version = "0.3" }
 bluer = { default-features = false, version = "0.15.4", features = ["bluetoothd"] }
 tokio = { default-features = false, version = "1" }
-influxdb = { default-features = false, version = "0.5.2" }
+influxdb = { default-features = false, version = "0.6.0" }
 clap = { default-features = false, version = "4.0.29", features = ["std", "derive", "help"] }
 
 [dev-dependencies]
