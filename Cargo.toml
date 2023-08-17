@@ -20,11 +20,11 @@ serde_derive = "1.0.137"
 log = "0.4.17"
 env_logger = { default-features = false, version = "0.10.0" }
 rppal = "0.14.1"
-ingics = { version = "0.1.1", features=["influxdb"] }
+ingics = { version = "0.1.2", features=["influxdb"] }
 futures = { default-features = false, version = "0.3" }
 bluer = { default-features = false, version = "0.15.4", features = ["bluetoothd"] }
 tokio = { default-features = false, version = "1" }
-influxdb = { default-features = false, version = "0.6.0" }
+influxdb = { default-features = false, version = "0.7.0", features = ["reqwest-client-rustls"] }
 clap = { default-features = false, version = "4.0.29", features = ["std", "derive", "help"] }
 
 [dev-dependencies]
