@@ -22,7 +22,7 @@ env_logger = { default-features = false, version = "0.10.0" }
 rppal = "0.14.1"
 ingics = { version = "0.1.2", features=["influxdb"] }
 futures = { default-features = false, version = "0.3" }
-bluer = { default-features = false, version = "0.15.4", features = ["bluetoothd"] }
+bluer = { default-features = false, version = "0.16.0", features = ["bluetoothd"] }
 tokio = { default-features = false, version = "1" }
 influxdb = { default-features = false, version = "0.7.0", features = ["reqwest-client-rustls"] }
 clap = { default-features = false, version = "4.0.29", features = ["std", "derive", "help"] }
