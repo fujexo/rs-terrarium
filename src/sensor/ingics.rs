@@ -1,4 +1,4 @@
-use bluer::{Adapter, AdapterEvent, Address, DeviceEvent};
+use bluer::{Adapter, AdapterEvent, Address, DeviceEvent, DiscoveryFilter, DiscoveryTransport};
 use futures::{pin_mut, stream::SelectAll, StreamExt};
 use influxdb::{Client, InfluxDbWriteable};
 use log::{debug, error, info};
@@ -63,6 +63,12 @@ pub async fn run() -> bluer::Result<()> {
         adapter.name()
     );
     adapter.set_powered(true).await?;
+
+    let filter = DiscoveryFilter {
+        transport: DiscoveryTransport::Le,
+        ..Default::default()
+    };
+    adapter.set_discovery_filter(filter).await?;
 
     let device_events = adapter.discover_devices().await?;
     pin_mut!(device_events);
