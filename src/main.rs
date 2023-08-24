@@ -6,7 +6,7 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    #[arg(short, long, default_value = "/etc/terrarium/config.toml")]
+    #[arg(short, long, default_value = "/etc/terrarium/config.yaml")]
     config: String,
 }
 
