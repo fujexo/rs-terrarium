@@ -29,7 +29,7 @@ clap = { default-features = false, version = "4.0.29", features = ["std", "deriv
 
 [dev-dependencies]
 mockall = "0.11.3"
-cargo-deb = "1.41.3"
+cargo-deb = "2.0.2"
 
 [package.metadata.cross.build]
 default-target = "armv7-unknown-linux-gnueabihf"
