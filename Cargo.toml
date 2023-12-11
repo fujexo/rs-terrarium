@@ -28,7 +28,7 @@ influxdb = { default-features = false, version = "0.7.0", features = ["reqwest-c
 clap = { default-features = false, version = "4.0.29", features = ["std", "derive", "help"] }
 
 [dev-dependencies]
-mockall = "0.11.3"
+mockall = "0.12.0"
 cargo-deb = "2.0.2"
 
 [package.metadata.cross.build]
