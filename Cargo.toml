@@ -19,7 +19,7 @@ serde = { default-features = false, version = "1.0.151" }
 serde_derive = "1.0.137"
 log = "0.4.17"
 env_logger = { default-features = false, version = "0.10.0" }
-rppal = "0.16.1"
+rppal = "0.17.0"
 ingics = { version = "0.1.2", features=["influxdb"] }
 futures = { default-features = false, version = "0.3" }
 bluer = { default-features = false, version = "0.16.0", features = ["bluetoothd"] }
