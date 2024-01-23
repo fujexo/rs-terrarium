@@ -18,7 +18,7 @@ config = { default-features = false, version = "0.13.2", features = ["yaml"] }
 serde = { default-features = false, version = "1.0.151" }
 serde_derive = "1.0.137"
 log = "0.4.17"
-env_logger = { default-features = false, version = "0.10.0" }
+env_logger = { default-features = false, version = "0.11.0" }
 rppal = "0.17.1"
 ingics = { version = "0.1.2", features=["influxdb"] }
 futures = { default-features = false, version = "0.3" }
