@@ -2,7 +2,7 @@ use bluer::{Adapter, AdapterEvent, Address, DeviceEvent, DiscoveryFilter, Discov
 use futures::{pin_mut, stream::SelectAll, StreamExt};
 use influxdb::{Client, InfluxDbWriteable};
 use log::{debug, error, info};
-use std::{collections::HashSet, env};
+use std::{collections::HashSet, env, process};
 
 async fn query_device(
     adapter: &Adapter,
@@ -36,9 +36,23 @@ async fn query_device(
                 Some(payload) => match ingics::parse_data(payload) {
                     None => error!("Failed to parse payload"),
                     Some(i) => {
-                        let write_result = influxclient.query(i.into_query("sensor")).await;
-                        if write_result.is_err() {
-                            error!("Failed to write result to InfluxDB");
+                        debug!("Payload: {:?}", i.event_status);
+                        // TODO: This needs to be configurable but I don't have the time and
+                        // interest this and next month
+                        if i.userdata == 5 && i.event_status == 1 {
+                            if let Err(err) = process::Command::new("sh")
+                                .arg("-c")
+                                .arg("/root/rain.sh")
+                                .arg("5")
+                                .status()
+                            {
+                                error!("Failed to execute command: {}", err)
+                            }
+                        } else {
+                            let write_result = influxclient.query(i.into_query("sensor")).await;
+                            if write_result.is_err() {
+                                error!("Failed to write result to InfluxDB");
+                            }
                         }
                     }
                 },
