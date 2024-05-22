@@ -39,18 +39,6 @@ pub fn run(config_file: String) {
     thread::spawn(sensor::ingics::run);
 
     let mut actors = actor::init(settings.actors);
-    //for actor in &actors {
-    //    actor.print_actor_config();
-    //}
-
-    // start our weather observatory via OWM
-    let receiver = &openweathermap::init(
-        settings.general.weather.location.as_str(),
-        settings.general.weather.units.as_str(),
-        settings.general.weather.language.as_str(),
-        settings.general.weather.api_key.as_str(),
-        60, // minutes
-    );
 
     // I'm assuming that we don't want to enable the actors until we have a new suntime from the
     // API. That's why I set the initial values to some hours in the future.
@@ -58,15 +46,11 @@ pub fn run(config_file: String) {
     let mut suntime = weather::Suntime {
         sunrise: Utc::now() + chrono::Duration::hours(24),
         sunset: Utc::now() + chrono::Duration::hours(24),
-        updated: false,
+        initialized: false,
     };
 
-    while !suntime.updated {
-        weather::update_suntime(receiver, &mut suntime);
-    }
-
     loop {
-        weather::update_suntime(receiver, &mut suntime);
+        weather::update_suntime(&settings.general.weather, &mut suntime);
 
         actors.iter_mut().for_each(|actor| {
             //let on_delay = iso8601_duration::Duration::parse(actor.config.on_delay);

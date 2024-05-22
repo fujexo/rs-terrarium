@@ -12,7 +12,6 @@ keywords = [""]
 categories = [""]
 
 [dependencies]
-openweathermap = "0.2.4"
 chrono = { default-features = false, version = "0.4.38" }
 config = { default-features = false, version = "0.14.0", features = ["yaml"] }
 serde = { default-features = false, version = "1.0.202" }
@@ -34,6 +33,7 @@ clap = { default-features = false, version = "4.5.4", features = [
   "derive",
   "help",
 ] }
+sunrise-sunset-calculator = "1.0.1"
 
 [dev-dependencies]
 mockall = "0.12.1"

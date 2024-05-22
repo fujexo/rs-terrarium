@@ -4,10 +4,8 @@ use serde_derive::Deserialize;
 #[derive(Deserialize, Debug)]
 #[allow(unused)]
 pub struct Weather {
-    pub api_key: String,
-    pub location: String,
-    pub units: String,
-    pub language: String,
+    pub latitude: f64,
+    pub longitude: f64,
 }
 
 #[derive(Deserialize, Debug)]
