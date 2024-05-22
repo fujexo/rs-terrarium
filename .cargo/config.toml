@@ -1,8 +1,13 @@
 # Raspberry Pi 4
 [target.armv7-unknown-linux-gnueabihf]
-objcopy = { path ="arm-none-eabi-objcopy" }
-strip = { path ="arm-none-eabi-strip" }
-rustflags = ["-L", "/usr/arm-linux-gnueabihf/lib", "-L", "/usr/lib/arm-linux-gnueabihf/" ]
+objcopy = { path = "arm-none-eabi-objcopy" }
+strip = { path = "arm-none-eabi-strip" }
+rustflags = [
+  "-L",
+  "/usr/arm-linux-gnueabihf/lib",
+  "-L",
+  "/usr/lib/arm-linux-gnueabihf/",
+]
 
 # Raspberry Pi Zero
 [target.arm-unknown-linux-gnueabihf]
