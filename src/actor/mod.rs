@@ -43,6 +43,7 @@ pub trait Actor {
     fn get_state(&self) -> State;
 
     // Toggle the state of the actor
+    #[allow(dead_code)]
     fn toggle(&mut self) {
         match self.get_state() {
             State::On => self.off(),
@@ -68,6 +69,7 @@ pub trait Actor {
         }
     }
 
+    #[allow(dead_code)]
     fn print_actor_config(&self) {}
 }
 
