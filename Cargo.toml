@@ -13,22 +13,22 @@ categories = [""]
 
 [dependencies]
 chrono = { default-features = false, version = "0.4.38" }
-config = { default-features = false, version = "0.14.0", features = ["yaml"] }
-serde = { default-features = false, version = "1.0.202" }
-serde_derive = "1.0.202"
-log = "0.4.21"
-env_logger = { default-features = false, version = "0.11.3" }
+config = { default-features = false, version = "0.14.1", features = ["yaml"] }
+serde = { default-features = false, version = "1.0.215" }
+serde_derive = "1.0.215"
+log = "0.4.22"
+env_logger = { default-features = false, version = "0.11.5" }
 rppal = "0.19.0"
 ingics = { version = "0.1.2", features = ["influxdb"] }
 futures = { default-features = false, version = "0.3" }
-bluer = { default-features = false, version = "0.17.1", features = [
+bluer = { default-features = false, version = "0.17.3", features = [
   "bluetoothd",
 ] }
 tokio = { default-features = false, version = "1" }
 influxdb = { default-features = false, version = "0.7.2", features = [
   "reqwest-client-rustls",
 ] }
-clap = { default-features = false, version = "4.5.4", features = [
+clap = { default-features = false, version = "4.5.20", features = [
   "std",
   "derive",
   "help",
@@ -37,7 +37,7 @@ sunrise-sunset-calculator = "1.0.1"
 
 [dev-dependencies]
 mockall = "0.13.0"
-cargo-deb = "2.2.0"
+cargo-deb = "2.8.0"
 
 [package.metadata.cross.build]
 default-target = "armv7-unknown-linux-gnueabihf"
