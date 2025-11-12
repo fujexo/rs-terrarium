@@ -13,7 +13,7 @@ categories = [""]
 
 [dependencies]
 chrono = { default-features = false, version = "0.4.38" }
-config = { default-features = false, version = "0.14.1", features = ["yaml"] }
+config = { default-features = false, version = "0.15.19", features = ["yaml"] }
 serde = { default-features = false, version = "1.0.215" }
 serde_derive = "1.0.215"
 log = "0.4.22"
