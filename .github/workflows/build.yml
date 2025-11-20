@@ -30,7 +30,7 @@ jobs:
     name: Build and Test ${{ matrix.target }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Ubuntu dependencies
         run: sudo apt update && sudo apt install -y --no-install-recommends libdbus-1-dev pkg-config
