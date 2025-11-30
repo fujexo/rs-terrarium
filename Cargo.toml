@@ -36,7 +36,7 @@ clap = { default-features = false, version = "4.5.20", features = [
 sunrise-sunset-calculator = "1.0.1"
 
 [dev-dependencies]
-mockall = "0.13.0"
+mockall = "0.14.0"
 cargo-deb = "3.6.2"
 
 [package.metadata.cross.build]
