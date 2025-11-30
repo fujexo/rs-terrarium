@@ -1,6 +1,6 @@
 [package]
 name = "terrarium"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 
 authors = ["Philipp Marmet  <fujexo@c0d3.ch>"]
@@ -42,8 +42,8 @@ cargo-deb = "2.8.0"
 [package.metadata.cross.build]
 default-target = "armv7-unknown-linux-gnueabihf"
 pre-build = [
-  "dpkg --add-architecture armhf",
-  "apt-get update && apt-get install --assume-yes libdbus-1-dev libdbus-1-dev:armhf pkg-config",
+  "dpkg --add-architecture $CROSS_DEB_ARCH",
+  "apt-get update && apt-get install --assume-yes libdbus-1-dev libdbus-1-dev:$CROSS_DEB_ARCH pkg-config",
 ]
 
 [package.metadata.cross.build.env]
