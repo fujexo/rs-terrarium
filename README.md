@@ -37,10 +37,11 @@ cross build --release
 ### DEB-Package
 
 With [cargo-deb](https://github.com/kornelski/cargo-deb), we can create a debian package for simpler installation.
-This requires to have [arm-none-eabi-binutils](https://archlinux.org/packages/community/x86_64/arm-none-eabi-binutils/) to be installed.
+This requires to have [arm-none-eabi-binutils](https://archlinux.org/packages/extra/x86_64/arm-none-eabi-binutils/) or
+[aarch64-linux-gnu-binutils](https://archlinux.org/packages/extra/x86_64/aarch64-linux-gnu-binutils/) to be installed.
 
 ```shell
-cargo deb --no-build --target armv7-unknown-linux-gnueabihf
+cargo deb --no-build --target aarch64-unknown-linux-gnu
 ```
 
 ### Coverage report
@@ -65,10 +66,10 @@ cross build --target arm-unknown-linux-gnueabihf
 ## TODO
 
 * Signal handling
-  We want to graceful exit on signals or Ctrl-C. Let's check https://rust-cli.github.io/book/in-depth/signals.html.
+  We want to graceful exit on signals or Ctrl-C. Let's check <https://rust-cli.github.io/book/in-depth/signals.html>.
 * Web-Relay
   We need to control a SONOFF relay with Tasmota or other firmwares
 * Sensors
   We need multiple sensors for the terrarium to control other actors.
-  - BME280
-  - HC-SR04
+  * BME280
+  * HC-SR04
