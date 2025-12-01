@@ -2,7 +2,7 @@ pub mod dummy;
 pub mod gpio_relay;
 
 #[cfg(test)]
-use mockall::{automock, mock, predicate::*};
+use mockall::{automock, predicate::*};
 
 use chrono::{DateTime, Utc};
 use log::debug;
@@ -146,7 +146,7 @@ mod tests {
         assert_eq!(duration.unwrap().num_seconds(), 10);
 
         let duration = parse_duration_seconds(None);
-        matches!(duration, Err(_));
+        let _ = duration.is_err();
     }
 
     #[test]
@@ -176,6 +176,7 @@ mod tests {
     #[test]
     fn test_actor_toggle_timebased() {
         struct Test {
+            #[allow(dead_code)]
             actor_config: ActorConfig,
             state: State,
         }
