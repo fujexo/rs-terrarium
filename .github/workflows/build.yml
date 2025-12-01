@@ -26,6 +26,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Install Build Dependencies
+        run: sudo apt update && sudo apt install -y --no-install-recommends libdbus-1-dev pkg-config
+
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -61,8 +64,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install Build Dependencies (Ubuntu)
-        # These are needed for cross-compilation linker/libraries
+      - name: Install Build Dependencies
         run: sudo apt update && sudo apt install -y --no-install-recommends libdbus-1-dev pkg-config
 
       - name: Install stable toolchain and components
