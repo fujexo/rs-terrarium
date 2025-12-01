@@ -62,10 +62,6 @@ jobs:
 
     needs: [cross_build]
 
-    strategy:
-      matrix:
-        targets: [armv7-unknown-linux-gnueabihf, aarch64-unknown-linux-gnu]
-
     steps:
       - name: Download previously built deps
         uses: actions/download-artifact@v5
