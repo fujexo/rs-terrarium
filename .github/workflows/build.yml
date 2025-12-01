@@ -18,7 +18,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  ## Quick Lint and Format Checks
+  # Quick Lint and Format Checks
   lint:
     runs-on: ubuntu-latest
     name: Lint and Format Check
@@ -43,10 +43,9 @@ jobs:
         run: cargo fmt --all -- --check
 
       - name: Run Clippy
-        # Use cargo check to run clippy natively for the fastest result
         run: cargo clippy --all-targets -- -D warnings
 
-  ## 2. Cross-Compilation, Test, and Packaging
+  # Cross-Compilation and Test
   cross_build:
     runs-on: ubuntu-latest
     name: Build and Test ${{ matrix.target }}
@@ -78,7 +77,6 @@ jobs:
         run: cargo install cross cargo-deb
 
       - uses: Swatinem/rust-cache@v2
-        # Setup cross-compilation targets
         with:
           key: ${{ matrix.target }}
 
@@ -86,18 +84,4 @@ jobs:
         run: cross build --release --verbose --target ${{ matrix.target }}
 
       - name: Test ${{ matrix.target }}
-        # Note: Testing cross-compiled binaries can sometimes be unreliable/require QEMU setup.
-        # Ensure 'cross test' is configured correctly for the target environment.
         run: cross test --release --verbose --target ${{ matrix.target }}
-
-      - name: Build Debian package
-        # 'cross' uses QEMU to run 'cargo deb' hooks/build steps if configured
-        run: cargo deb --no-build --no-strip --target ${{ matrix.target }}
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v5
-        with:
-          name: terrarium-${{ matrix.target }}
-          path: |
-            target/${{ matrix.target }}/release/terrarium
-            target/${{ matrix.target }}/debian/terrarium*.deb
