@@ -117,7 +117,7 @@ jobs:
         uses: crazy-max/ghaction-github-pages@v4
         with:
           repo: fujexo/rs-terrarium
-          target_branch: main
+          target_branch: gh-pages
           keep_history: false
           build_dir: snapshot
           allow_empty_commit: false
