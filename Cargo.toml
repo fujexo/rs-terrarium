@@ -1,6 +1,6 @@
 [package]
 name = "terrarium"
-version = "0.1.5"
+version = "0.1.11"
 edition = "2021"
 
 authors = ["Philipp Marmet  <fujexo@c0d3.ch>"]
