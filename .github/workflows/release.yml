@@ -1,0 +1,130 @@
+name: Release
+
+on:
+  # 1. Trigger only when a new tag is pushed (which signifies a release)
+  push:
+    tags:
+      - "v[0-9]+.*" # Matches tags like v1.0.0, v1.2, etc.
+
+env:
+  CARGO_TERM_COLOR: always
+  # Extract the version from the tag name (e.g., v1.0.0 -> 1.0.0)
+  RELEASE_VERSION: ${{ github.ref_name }}
+
+jobs:
+  # Build and Package Artifact
+  cross_build:
+    runs-on: ubuntu-24.04
+    name: Build and Package ${{ matrix.target }}
+
+    # Use the same matrix as your existing workflow
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - armv7-unknown-linux-gnueabihf
+          - aarch64-unknown-linux-gnu # Included the second architecture
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Build Dependencies (Ubuntu)
+        run: sudo apt update && sudo apt install -y --no-install-recommends libdbus-1-dev pkg-config
+
+      - name: Install stable toolchain and components
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: default
+          toolchain: stable
+          override: true
+
+      - name: Install Cargo Tools (cross, cargo-deb)
+        run: cargo install cross cargo-deb
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}-${{ hashFiles('Cargo.lock') }}
+
+      - name: Build and Package .deb file
+        run: |
+          cross build --release --target ${{ matrix.target }}
+          cargo deb --no-build --no-strip --target ${{ matrix.target }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: deb-package-${{ matrix.target }}
+          path: target/${{ matrix.target }}/debian/terrarium_*.deb
+
+  create-repo:
+    runs-on: ubuntu-24.04
+    name: Create GitHub Release and Aptly Repo
+
+    needs: [cross_build]
+
+    strategy:
+      matrix:
+        targets: [armv7-unknown-linux-gnueabihf, aarch64-unknown-linux-gnu]
+
+    steps:
+      - name: Download previously built deps
+        uses: actions/download-artifact@v5
+        with:
+          path: debs
+
+      - name: List packages
+        run: |
+          find $(pwd) -name '*.deb'
+
+      - name: Create and Publish Aptly Repo
+        uses: jinnatar/actions-aptly-repo@v2
+        with:
+          name: terrarium
+          prefix: debian
+          repo_url: https://fujexo.github.io/rs-terrarium
+          repos: |
+            trixie,stable,\"armv7,arm64\",false,debs/**/*.deb
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          gpg_export_name: terrarium.asc
+          artifact_name: terrarium_repo_snapshot
+
+  # Publish the created repo if and only if it's a push to main.
+  publish:
+    name: Deploy to GitHub Pages
+    needs: create-repo
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download repo snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: kanidm_ppa_snapshot
+          path: snapshot
+          merge-multiple: true # Flatten artifact name out
+      - name: Add README.md
+        shell: bash
+        run: |
+          cp docs/repository.dm snapshot/README.md
+      - name: Import GPG key # So we can sign the repository commit
+        uses: crazy-max/ghaction-import-gpg@v6
+        env:
+          # GitHub is a real ass about checking whether secrets are available or not.
+          private_key_check: ${{ secrets.GPG_PRIVATE_KEY }}
+        if: env.private_key_check != '' # Not present for PRs on purpose.
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+          git_commit_gpgsign: true
+      - name: Publish
+        uses: crazy-max/ghaction-github-pages@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          repo: fujexo/rs-terrarium
+          target_branch: main
+          keep_history: false
+          build_dir: snapshot
+          allow_empty_commit: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
