@@ -96,7 +96,7 @@ jobs:
       - name: Download repo snapshot
         uses: actions/download-artifact@v4
         with:
-          name: kanidm_ppa_snapshot
+          name: terrarium_repo_snapshot
           path: snapshot
           merge-multiple: true # Flatten artifact name out
       - name: Add README.md
