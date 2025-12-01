@@ -115,7 +115,6 @@ jobs:
           git_commit_gpgsign: true
       - name: Publish
         uses: crazy-max/ghaction-github-pages@v4
-        if: github.ref == 'refs/heads/main'
         with:
           repo: fujexo/rs-terrarium
           target_branch: main
