@@ -102,7 +102,7 @@ jobs:
       - name: Add README.md
         shell: bash
         run: |
-          cp docs/repository.dm snapshot/README.md
+          cp docs/repository.md snapshot/README.md
       - name: Import GPG key # So we can sign the repository commit
         uses: crazy-max/ghaction-import-gpg@v6
         env:
