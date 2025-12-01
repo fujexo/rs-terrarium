@@ -1,12 +1,6 @@
 name: Lint, Test and Compile
 
 on:
-  push:
-    paths:
-      - ".github/workflows/build.yml"
-      - "src/**"
-      - "Cargo.*"
-    branches: ["main"]
   pull_request:
     paths:
       - ".github/workflows/build.yml"
