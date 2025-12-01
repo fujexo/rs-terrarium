@@ -1,4 +1,4 @@
-name: Lint and Test
+name: Lint, Test and Compile
 
 on:
   push:
@@ -6,20 +6,50 @@ on:
       - ".github/workflows/build.yml"
       - "src/**"
       - "Cargo.*"
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
     paths:
       - ".github/workflows/build.yml"
       - "src/**"
       - "Cargo.*"
-    branches: [ "main" ]
+    branches: ["main"]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  ## Quick Lint and Format Checks
+  lint:
     runs-on: ubuntu-latest
+    name: Lint and Format Check
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: clippy, rustfmt
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+      - name: Run Clippy
+        # Use cargo check to run clippy natively for the fastest result
+        run: cargo clippy --all-targets -- -D warnings
+
+  ## 2. Cross-Compilation, Test, and Packaging
+  cross_build:
+    runs-on: ubuntu-latest
+    name: Build and Test ${{ matrix.target }}
+
+    # Only start cross-build if lint/fmt passed
+    needs: [lint]
 
     strategy:
       fail-fast: false
@@ -27,46 +57,38 @@ jobs:
         target:
           - armv7-unknown-linux-gnueabihf
 
-    name: Build and Test ${{ matrix.target }}
-
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install Ubuntu dependencies
+      - name: Install Build Dependencies (Ubuntu)
+        # These are needed for cross-compilation linker/libraries
         run: sudo apt update && sudo apt install -y --no-install-recommends libdbus-1-dev pkg-config
 
-      - name: Install stable toolchain
+      - name: Install stable toolchain and components
         uses: actions-rs/toolchain@v1
         with:
           profile: default
           toolchain: stable
           override: true
-          components: clippy, rustfmt
+
+      - name: Install Cargo Tools (cross, cargo-deb)
+        run: cargo install cross cargo-deb
 
       - uses: Swatinem/rust-cache@v2
-
-      - name: Show environment
-        run: |
-          rustc -vV
-          cargo -vV
-
-      - name: Install cargo dependencies
-        run: cargo install cross cargo-deb
+        # Setup cross-compilation targets
+        with:
+          key: ${{ matrix.target }}
 
       - name: Build ${{ matrix.target }}
         run: cross build --release --verbose --target ${{ matrix.target }}
 
       - name: Test ${{ matrix.target }}
+        # Note: Testing cross-compiled binaries can sometimes be unreliable/require QEMU setup.
+        # Ensure 'cross test' is configured correctly for the target environment.
         run: cross test --release --verbose --target ${{ matrix.target }}
 
-      - name: Clippy ${{ matrix.target }}
-        run: cross clippy --release --verbose --target ${{ matrix.target }}
-
-      - name: check formatting
-        if: ${{ matrix.target == 'armv7-unknown-linux-gnueabihf' }}
-        run: cargo fmt --all -- --check
-
-      - name: Build debian package
+      - name: Build Debian package
+        # 'cross' uses QEMU to run 'cargo deb' hooks/build steps if configured
         run: cargo deb --no-build --no-strip --target ${{ matrix.target }}
 
       - name: Upload Artifacts
