@@ -51,7 +51,7 @@ jobs:
           cargo deb --no-build --no-strip --target ${{ matrix.target }}
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: deb-package-${{ matrix.target }}
           path: target/${{ matrix.target }}/debian/terrarium_*.deb
