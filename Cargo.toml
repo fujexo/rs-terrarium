@@ -25,7 +25,7 @@ bluer = { default-features = false, version = "0.17.4", features = [
   "bluetoothd",
 ] }
 tokio = { default-features = false, version = "1" }
-influxdb = { default-features = false, version = "0.7.2", features = [
+influxdb = { default-features = false, version = "0.8.0", features = [
   "reqwest-client-rustls",
 ] }
 clap = { default-features = false, version = "4.5.53", features = [
